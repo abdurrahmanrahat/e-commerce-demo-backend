@@ -8,7 +8,10 @@ const app: Application = express();
 // parsers
 app.use(express.json());
 
-const allowedOrigins = ['http://localhost:3000']; // frontend URL
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://e-commerce-demo-backend.vercel.app',
+]; // frontend URL
 
 app.use(
   cors({

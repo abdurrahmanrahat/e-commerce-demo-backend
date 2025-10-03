@@ -20,7 +20,7 @@ const createUserIntoDB = async (user: TUser) => {
 // get
 const getAllUsersFromDB = async () => {
   // TODO: use QueryBuilder for search filter, and pagination.
-  const users = await User.find({});
+  const users = await User.find({}).select('-password');
   return users;
 };
 
@@ -34,7 +34,7 @@ const getLoggedInUserFromDB = async (accessToken: string) => {
 
     const { email } = verifiedToken as JwtPayload;
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select('-password');
 
     if (!user) {
       throw new AppError(httpStatus.NOT_FOUND, 'User not found!');

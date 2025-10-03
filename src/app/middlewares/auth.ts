@@ -11,7 +11,7 @@ export const auth = (...requiredRoles: (keyof typeof USER_ROLE)[]) => {
     const token = req.headers.authorization?.split(' ')[1];
 
     if (!token) {
-      throw new AppError(401, 'Token not found!');
+      throw new AppError(401, 'Authentication token missing!');
     }
 
     const verifiedToken = jwt.verify(token, config.jwt_access_secret as string);
@@ -21,7 +21,7 @@ export const auth = (...requiredRoles: (keyof typeof USER_ROLE)[]) => {
     const existingUser = await User.findOne({ email });
 
     if (!existingUser) {
-      throw new AppError(401, 'User not found!');
+      throw new AppError(404, 'User not found!');
     }
 
     if (!requiredRoles.includes(role)) {
