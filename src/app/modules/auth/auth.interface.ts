@@ -1,4 +1,4 @@
-import { USER_ROLE } from '../user/user.constants';
+import { USER_ROLE } from '../user/user.constant';
 
 export type TLoginUser = {
   email: string;

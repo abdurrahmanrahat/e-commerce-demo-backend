@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { Schema, model } from 'mongoose';
 import config from '../../config';
-import { USER_ROLE } from './user.constants';
+import { USER_ROLE } from './user.constant';
 import { TUser, UserStaticModel } from './user.interface';
 
 const userSchema = new Schema<TUser, UserStaticModel>(

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { USER_ROLE } from './user.constants';
+import { USER_ROLE } from './user.constant';
 
 const createUserValidationSchema = z.object({
   body: z.object({

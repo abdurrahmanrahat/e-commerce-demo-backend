@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from '../config';
 import AppError from '../errors/AppError';
-import { USER_ROLE } from '../modules/user/user.constants';
+import { USER_ROLE } from '../modules/user/user.constant';
 import { User } from '../modules/user/user.model';
 import catchAsync from '../utils/catchAsync';
 
