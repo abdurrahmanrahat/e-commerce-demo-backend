@@ -7,15 +7,15 @@ export type TCategory = {
   subCategoryOf?: Types.ObjectId;
 };
 
-export type TPromiseResponseCategories = {
+export type TPromiseResponseCategory = {
   _id: string;
   name: string;
   slug: string;
   image: string;
-  subCategories: TPromiseResponseCategory[];
+  subCategories: TPromiseResponseSubCategory[];
 };
 
-export type TPromiseResponseCategory = {
+export type TPromiseResponseSubCategory = {
   _id: string;
   name: string;
   slug: string;

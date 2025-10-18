@@ -1,4 +1,6 @@
 import { FilterQuery, Query } from 'mongoose';
+import { TPromiseResponseCategory } from '../modules/category/category.interface';
+import { collectCategorySlugs } from '../utils/collectCategorySlugs';
 import { SORT_OPTION_MAP } from '../utils/sortOptionMap';
 
 class QueryBuilder<T> {
@@ -25,7 +27,7 @@ class QueryBuilder<T> {
     return this;
   }
 
-  filter() {
+  filter(allCategories?: TPromiseResponseCategory[]) {
     const queryObj = { ...this.query };
 
     // Filtering
@@ -57,6 +59,27 @@ class QueryBuilder<T> {
     }
 
     //? TODO: Category filtering
+    if (this?.query?.category && allCategories) {
+      const selectedCategories = (this?.query?.category as string)
+        .split(',')
+        .map((slug) => slug.trim());
+
+      console.log('selectedCategories', selectedCategories);
+
+      // Collect all related slugs from each category
+      const allSlugs = selectedCategories.flatMap((slug) =>
+        collectCategorySlugs(slug, allCategories),
+      );
+      console.log('selectedCategories', selectedCategories);
+
+      // Remove duplicates (to keep query clean)
+      const uniqueSlugsInObj = new Set(allSlugs); // return unique in obj
+      const uniqueSlugs = [...uniqueSlugsInObj];
+      console.log('uniqueSlugs', uniqueSlugs);
+
+      // Add to query
+      queryObj.category = { $in: ['mobile-phones'] };
+    }
 
     // Tags filtering
     if (this?.query?.tags) {

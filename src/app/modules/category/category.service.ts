@@ -1,6 +1,6 @@
 import httpStatus from 'http-status';
 import AppError from '../../errors/AppError';
-import { TCategory, TPromiseResponseCategories } from './category.interface';
+import { TCategory, TPromiseResponseCategory } from './category.interface';
 import { Category } from './category.model';
 
 const createCategoryIntoDB = async (categoryData: TCategory) => {
@@ -17,7 +17,7 @@ const createCategoryIntoDB = async (categoryData: TCategory) => {
 };
 
 const getAllCategoriesFromDB = async (): Promise<
-  TPromiseResponseCategories[]
+  TPromiseResponseCategory[]
 > => {
   // fetch only all parent categories
   const parentCategories = await Category.find({
@@ -27,7 +27,7 @@ const getAllCategoriesFromDB = async (): Promise<
     .lean();
 
   // for each parent, fetch all sub categories
-  const result: TPromiseResponseCategories[] = await Promise.all(
+  const result: TPromiseResponseCategory[] = await Promise.all(
     parentCategories.map(async (category) => {
       const subCategories = await Category.find({ subCategoryOf: category._id })
         .select('_id name slug')

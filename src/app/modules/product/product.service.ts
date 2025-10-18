@@ -1,6 +1,7 @@
 import httpStatus from 'http-status';
 import QueryBuilder from '../../builder/QueryBuilder';
 import AppError from '../../errors/AppError';
+import { CategoryServices } from '../category/category.service';
 import { productSearchableFields } from './product.constants';
 import { TProduct } from './product.interface';
 import { Product } from './product.model';
@@ -11,14 +12,14 @@ const createProductIntoDB = async (payload: TProduct) => {
 };
 
 const getProductsFromDB = async (query: Record<string, unknown>) => {
-  // const result = await CategoryServices.getAllCategoriesFromDB();
+  const allCategories = await CategoryServices.getAllCategoriesFromDB();
 
   const productQuery = new QueryBuilder(
     Product.find({ isDeleted: false }),
     query,
   )
     .search(productSearchableFields)
-    .filter()
+    .filter(allCategories)
     .paginate()
     .sort();
 
@@ -26,7 +27,7 @@ const getProductsFromDB = async (query: Record<string, unknown>) => {
 
   const countQuery = new QueryBuilder(Product.find({ isDeleted: false }), query)
     .search(productSearchableFields)
-    .filter();
+    .filter(allCategories);
 
   const totalCount = (await countQuery.modelQuery).length;
 
