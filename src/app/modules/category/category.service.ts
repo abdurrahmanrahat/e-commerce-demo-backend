@@ -60,6 +60,13 @@ const updateCategoryIntoDB = async (
     throw new AppError(404, `Category with the id ${categoryId} is not found!`);
   }
 
+  if (!payload || Object.keys(payload).length === 0) {
+    throw new AppError(
+      Number(httpStatus[400]),
+      'Update payload cannot be empty!',
+    );
+  }
+
   const result = await Category.findByIdAndUpdate(
     categoryId,
     payload,
@@ -76,7 +83,7 @@ const deleteCategoryFromDB = async (categoryId: string) => {
     .lean();
 
   if (!category) {
-    throw new AppError(404, 'Category not found!');
+    throw new AppError(httpStatus.NOT_FOUND, 'Category not found!');
   }
 
   // if it's a parent (no subCategoryOf field)

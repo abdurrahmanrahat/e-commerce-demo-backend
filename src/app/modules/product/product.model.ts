@@ -1,7 +1,7 @@
 import { model, Schema } from 'mongoose';
-import { IProduct } from './product.interface';
+import { TProduct } from './product.interface';
 
-const productSchema: Schema<IProduct> = new Schema<IProduct>(
+const productSchema: Schema<TProduct> = new Schema<TProduct>(
   {
     name: {
       type: String,
@@ -17,11 +17,6 @@ const productSchema: Schema<IProduct> = new Schema<IProduct>(
       type: String,
       required: [true, 'Product description is required'],
     },
-    image: {
-      type: String,
-      required: [true, 'Product image URL is required'],
-      trim: true,
-    },
     images: {
       type: [String],
       required: [true, 'Product images are required'],
@@ -30,21 +25,22 @@ const productSchema: Schema<IProduct> = new Schema<IProduct>(
     category: {
       type: String,
       required: [true, 'Product category is required'],
+      trim: true,
     },
     price: {
       type: Number,
       required: [true, 'Product price is required'],
       trim: true,
     },
+    sellingPrice: {
+      type: Number,
+      required: [true, 'Product selling price is required'],
+      trim: true,
+    },
     stock: {
       type: Number,
       required: [true, 'Product stock quantity is required'],
       trim: true,
-    },
-    discount: {
-      type: Schema.Types.ObjectId,
-      ref: 'Discount',
-      default: null,
     },
     tags: {
       type: [String],
@@ -73,4 +69,4 @@ const productSchema: Schema<IProduct> = new Schema<IProduct>(
   },
 );
 
-export const Product = model<IProduct>('Product', productSchema);
+export const Product = model<TProduct>('Product', productSchema);

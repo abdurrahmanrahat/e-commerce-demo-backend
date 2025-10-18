@@ -1,7 +1,9 @@
 import express from 'express';
-import ValidateRequest from '../../middlewares/ValidateRequest';
+import { auth } from '../../middlewares/auth';
+import validateRequest from '../../middlewares/validateRequest';
 import { ProductReviewControllers } from '../product-review/product-review.controller';
 import { ProductReviewValidations } from '../product-review/product-review.validation';
+import { USER_ROLE } from '../user/user.constant';
 import { ProductControllers } from './product.controller';
 import { ProductValidations } from './product.validation';
 
@@ -9,8 +11,8 @@ const router = express.Router();
 
 router.post(
   '/create-product',
-  //   auth(USER_ROLE.admin),
-  ValidateRequest(ProductValidations.createProductValidationSchema),
+  auth(USER_ROLE.admin),
+  validateRequest(ProductValidations.createProductValidationSchema),
   ProductControllers.createProduct,
 );
 
@@ -19,14 +21,14 @@ router.get('/:productSlug', ProductControllers.getSingleProduct);
 
 router.patch(
   '/:productId',
-  //   auth(USER_ROLE.admin),
-  ValidateRequest(ProductValidations.updateProductValidationSchema),
+  auth(USER_ROLE.admin),
+  validateRequest(ProductValidations.updateProductValidationSchema),
   ProductControllers.updateProduct,
 );
 
 router.delete(
   '/:productId',
-  // auth(USER_ROLE.admin),
+  auth(USER_ROLE.admin),
   ProductControllers.deleteProduct,
 );
 
@@ -34,7 +36,7 @@ router.delete(
 
 router.post(
   '/:productId/reviews/create-review',
-  ValidateRequest(ProductReviewValidations.createProductReviewValidationSchema),
+  validateRequest(ProductReviewValidations.createProductReviewValidationSchema),
   ProductReviewControllers.createReview,
 );
 
@@ -52,7 +54,7 @@ router.get(
 
 router.patch(
   '/:productId/reviews/:reviewId',
-  ValidateRequest(ProductReviewValidations.updateProductReviewValidationSchema),
+  validateRequest(ProductReviewValidations.updateProductReviewValidationSchema),
   ProductReviewControllers.updateReview,
 );
 

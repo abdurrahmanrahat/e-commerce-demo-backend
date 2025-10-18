@@ -1,4 +1,5 @@
 import { FilterQuery, Query } from 'mongoose';
+import { SORT_OPTION_MAP } from '../utils/sortOptionMap';
 
 class QueryBuilder<T> {
   public modelQuery: Query<T[], T>;
@@ -28,18 +29,53 @@ class QueryBuilder<T> {
     const queryObj = { ...this.query };
 
     // Filtering
-    const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
+    const excludeFields = [
+      'searchTerm',
+      'sort',
+      'limit',
+      'page',
+      'fields',
+      'minPrice',
+      'maxPrice',
+      'category',
+      'tags',
+    ];
     excludeFields.forEach((field) => delete queryObj[field]);
 
-    this.modelQuery = this.modelQuery.find(queryObj as FilterQuery<T>);
+    // Price range filtering
+    const priceFilter: Record<string, number> = {};
 
+    if (this?.query?.minPrice) {
+      priceFilter.$gte = Number(this.query.minPrice);
+    }
+    if (this?.query?.maxPrice) {
+      priceFilter.$lte = Number(this.query.maxPrice);
+    }
+
+    if (Object.keys(priceFilter).length > 0) {
+      queryObj.sellingPrice = priceFilter;
+    }
+
+    //? TODO: Category filtering
+
+    // Tags filtering
+    if (this?.query?.tags) {
+      const tagsArray = (this.query.tags as string).split(',');
+
+      queryObj.tags = { $in: tagsArray };
+    }
+
+    this.modelQuery = this.modelQuery.find(queryObj as FilterQuery<T>);
     return this;
   }
 
   sort() {
-    const sort =
-      (this?.query?.sort as string)?.split(',')?.join(' ') || '-createdAt';
-    this.modelQuery = this.modelQuery.sort(sort as string);
+    const sortKey = this?.query?.sort as string;
+    const resolvedSort = SORT_OPTION_MAP[sortKey];
+
+    if (resolvedSort) {
+      this.modelQuery = this.modelQuery.sort(resolvedSort);
+    }
 
     return this;
   }

@@ -1,26 +1,22 @@
-import { Document, Types } from 'mongoose';
-
-export interface IProduct extends Document {
+export type TProduct = {
   name: string;
   slug: string;
   description: string; // html string
-  image: string;
   images: string[]; // Gallery
   category: string;
   price: number;
+  sellingPrice: number;
   stock: number;
-  discount: Types.ObjectId | null;
   tags: string[];
-  totalReviews?: number;
-  averageRatings?: number;
+  totalReviews?: number; // update on review action
+  averageRatings?: number; // update on review action
   salesCount?: number; // update on order
   isDeleted?: boolean;
-}
+};
 
 //? create those before creating product
 // category
-// discount
 
-//? Extra, will come from user
+//? Extra, will come from user if login required to purchase
 // wishlist
 // review

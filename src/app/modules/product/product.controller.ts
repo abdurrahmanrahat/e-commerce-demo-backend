@@ -5,18 +5,18 @@ import { sendResponse } from '../../utils/sendResponse';
 import { ProductServices } from './product.service';
 
 const createProduct = catchAsync(async (req: Request, res: Response) => {
-  const result = await ProductServices.createProductIntoDb(req.body);
+  const result = await ProductServices.createProductIntoDB(req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
-    message: 'Product created successfully',
+    message: 'Product upload successfully',
     data: result,
   });
 });
 
 const getAllProducts = catchAsync(async (req: Request, res: Response) => {
-  const result = await ProductServices.getProductsFromDb(req.query);
+  const result = await ProductServices.getProductsFromDB(req.query);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -27,7 +27,7 @@ const getAllProducts = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getSingleProduct = catchAsync(async (req: Request, res: Response) => {
-  const result = await ProductServices.getSingleProductFromDb(
+  const result = await ProductServices.getSingleProductFromDB(
     req.params.productSlug,
   );
 
@@ -40,7 +40,7 @@ const getSingleProduct = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateProduct = catchAsync(async (req: Request, res: Response) => {
-  const result = await ProductServices.updateProductIntoDb(
+  const result = await ProductServices.updateProductIntoDB(
     req.params.productId,
     req.body,
   );
@@ -54,7 +54,7 @@ const updateProduct = catchAsync(async (req: Request, res: Response) => {
 });
 
 const deleteProduct = catchAsync(async (req: Request, res: Response) => {
-  const result = await ProductServices.deleteProductIntoDb(
+  const result = await ProductServices.deleteProductIntoDB(
     req.params.productId,
   );
 
