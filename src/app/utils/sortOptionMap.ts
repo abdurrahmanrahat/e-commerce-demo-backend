@@ -5,6 +5,6 @@ export const SORT_OPTION_MAP: Record<string, string | null> = {
   newest: '-createdAt',
   best_selling: '-salesCount',
   top_rated: '-averageRatings',
-  'sort:a_to_z': 'name',
-  'sort:z_to_a': '-name',
+  ascending: 'name',
+  descending: '-name',
 };

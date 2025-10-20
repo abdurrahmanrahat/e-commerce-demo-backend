@@ -64,21 +64,17 @@ class QueryBuilder<T> {
         .split(',')
         .map((slug) => slug.trim());
 
-      console.log('selectedCategories', selectedCategories);
-
       // Collect all related slugs from each category
       const allSlugs = selectedCategories.flatMap((slug) =>
         collectCategorySlugs(slug, allCategories),
       );
-      console.log('selectedCategories', selectedCategories);
 
       // Remove duplicates (to keep query clean)
       const uniqueSlugsInObj = new Set(allSlugs); // return unique in obj
       const uniqueSlugs = [...uniqueSlugsInObj];
-      console.log('uniqueSlugs', uniqueSlugs);
 
       // Add to query
-      queryObj.category = { $in: ['mobile-phones'] };
+      queryObj.category = { $in: uniqueSlugs };
     }
 
     // Tags filtering
