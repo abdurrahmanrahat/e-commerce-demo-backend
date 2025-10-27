@@ -1,34 +1,65 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from 'http-status';
 import QueryBuilder from '../../builder/QueryBuilder';
 import AppError from '../../errors/AppError';
-import { getNextOrderNumber } from '../../utils/getNextOrderNumber';
 import { Product } from '../product/product.model';
 import { orderSearchableFields } from './order.constants';
 import { IOrder } from './order.interface';
 import { Order } from './order.model';
 
-const createOrderIntoDb = async (payload: IOrder) => {
-  const orderNumber = await getNextOrderNumber();
-
+const createOrderIntoDB = async (payload: IOrder) => {
   const session = await Order.startSession();
 
   try {
     session.startTransaction();
 
-    for (const item of payload.orderItems) {
-      const product = await Product.findById(item.product).session(session);
+    // order number count
+    const now = new Date();
+    const yearMonth = `${now.getFullYear()}${(now.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}`; // e.g., 202508
 
-      if (!product || product.stock < item.quantity) {
+    // Find the latest order for this month
+    const lastOrder = await Order.findOne({
+      orderNumber: new RegExp(`ORD-${yearMonth}-`),
+    })
+      .sort({ createdAt: -1 })
+      .session(session)
+      .exec();
+
+    let sequence = 1;
+
+    if (lastOrder && lastOrder.orderNumber) {
+      // Extract last 6 digits for the sequence
+      const lastSeq = parseInt(lastOrder.orderNumber.slice(-6), 10);
+      sequence = lastSeq + 1;
+    }
+
+    const orderNumber = `ORD-${yearMonth}-${sequence
+      .toString()
+      .padStart(6, '0')}`;
+
+    for (const item of payload.orderItems) {
+      const updateResult = await Product.updateOne(
+        {
+          _id: item.product,
+          stock: { $gte: item.quantity }, // make sure enough stock remains
+        },
+        {
+          $inc: {
+            stock: -item.quantity, // deduct stock
+            salesCount: item.quantity, // increase sales count
+          },
+        },
+        { session },
+      );
+
+      if (updateResult.modifiedCount === 0) {
         throw new AppError(
           httpStatus.BAD_REQUEST,
-          `Product does not exist or insufficient stock.`,
+          `Insufficient stock for product ${item.product}`,
         );
       }
-
-      product.salesCount = (product.salesCount as number) + item.quantity;
-
-      product.stock -= item.quantity;
-      await product.save({ session });
     }
 
     const createdOrder = await Order.create([{ ...payload, orderNumber }], {
@@ -50,11 +81,11 @@ const createOrderIntoDb = async (payload: IOrder) => {
   }
 };
 
-const getOrdersFromDb = async (query: Record<string, unknown>) => {
+const getOrdersFromDB = async (query: Record<string, unknown>) => {
   const baseQuery = Order.find({ isDeleted: false });
 
   const queryBuilder = new QueryBuilder(baseQuery, query)
-    .search(orderSearchableFields) // you can adapt searchable fields
+    .search(orderSearchableFields)
     .filter()
     .paginate()
     .sort();
@@ -72,7 +103,7 @@ const getOrdersFromDb = async (query: Record<string, unknown>) => {
   return { data: orders, totalCount };
 };
 
-const getSingleOrderFromDb = async (orderId: string) => {
+const getSingleOrderFromDB = async (orderId: string) => {
   const order = await Order.findOne({
     _id: orderId,
     isDeleted: false,
@@ -85,7 +116,7 @@ const getSingleOrderFromDb = async (orderId: string) => {
   return order;
 };
 
-const updateOrderIntoDb = async (orderId: string, payload: Partial<IOrder>) => {
+const updateOrderIntoDB = async (orderId: string, payload: Partial<IOrder>) => {
   const updatedOrder = await Order.findByIdAndUpdate(orderId, payload, {
     new: true,
   });
@@ -100,7 +131,7 @@ const updateOrderIntoDb = async (orderId: string, payload: Partial<IOrder>) => {
   return updatedOrder;
 };
 
-const deleteOrderIntoDb = async (orderId: string) => {
+const deleteOrderIntoDB = async (orderId: string) => {
   const session = await Order.startSession();
 
   try {
@@ -119,14 +150,16 @@ const deleteOrderIntoDb = async (orderId: string) => {
     }
 
     for (const item of order.orderItems) {
-      const product = await Product.findById(item.product).session(session);
-
-      if (product) {
-        product.stock += item.quantity;
-
-        product.salesCount = (product.salesCount as number) - item.quantity;
-        await product.save({ session });
-      }
+      await Product.updateOne(
+        { _id: item.product },
+        {
+          $inc: {
+            stock: item.quantity,
+            salesCount: -item.quantity,
+          },
+        },
+        { session },
+      );
     }
 
     order.isDeleted = true;
@@ -148,9 +181,9 @@ const deleteOrderIntoDb = async (orderId: string) => {
 };
 
 export const OrderServices = {
-  createOrderIntoDb,
-  getOrdersFromDb,
-  getSingleOrderFromDb,
-  updateOrderIntoDb,
-  deleteOrderIntoDb,
+  createOrderIntoDB,
+  getOrdersFromDB,
+  getSingleOrderFromDB,
+  updateOrderIntoDB,
+  deleteOrderIntoDB,
 };

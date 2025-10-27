@@ -5,18 +5,18 @@ import { sendResponse } from '../../utils/sendResponse';
 import { OrderServices } from './order.service';
 
 const createOrder = catchAsync(async (req: Request, res: Response) => {
-  const result = await OrderServices.createOrderIntoDb(req.body);
+  const result = await OrderServices.createOrderIntoDB(req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
-    message: 'Order created successfully',
+    message: 'Order placed successfully',
     data: result,
   });
 });
 
 const getAllOrders = catchAsync(async (req: Request, res: Response) => {
-  const result = await OrderServices.getOrdersFromDb(req.query);
+  const result = await OrderServices.getOrdersFromDB(req.query);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -27,18 +27,18 @@ const getAllOrders = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getSingleOrder = catchAsync(async (req: Request, res: Response) => {
-  const result = await OrderServices.getSingleOrderFromDb(req.params.orderId);
+  const result = await OrderServices.getSingleOrderFromDB(req.params.orderId);
 
   sendResponse(res, {
-    statusCode: result ? httpStatus.OK : httpStatus.NOT_FOUND,
-    success: !!result,
-    message: result ? 'Order retrieved successfully' : 'Order not found',
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Order retrieved successfully',
     data: result,
   });
 });
 
 const updateOrder = catchAsync(async (req: Request, res: Response) => {
-  const result = await OrderServices.updateOrderIntoDb(
+  const result = await OrderServices.updateOrderIntoDB(
     req.params.orderId,
     req.body,
   );
@@ -52,7 +52,7 @@ const updateOrder = catchAsync(async (req: Request, res: Response) => {
 });
 
 const deleteOrder = catchAsync(async (req: Request, res: Response) => {
-  const result = await OrderServices.deleteOrderIntoDb(req.params.orderId);
+  const result = await OrderServices.deleteOrderIntoDB(req.params.orderId);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
