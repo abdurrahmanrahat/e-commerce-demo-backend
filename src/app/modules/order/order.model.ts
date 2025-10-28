@@ -62,7 +62,7 @@ const orderSchema = new Schema<IOrder>(
     status: {
       type: String,
       enum: Object.values(ORDER_STATUS),
-      default: ORDER_STATUS.PENDING,
+      default: ORDER_STATUS.pending,
     },
     paymentMethod: {
       type: String,
