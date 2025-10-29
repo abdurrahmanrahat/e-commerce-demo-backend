@@ -21,6 +21,7 @@ const createOrderIntoDB = async (payload: IOrder) => {
 
     // Find the latest order for this month
     const lastOrder = await Order.findOne({
+      isDeleted: false,
       orderNumber: new RegExp(`ORD-${yearMonth}-`),
     })
       .sort({ createdAt: -1 })

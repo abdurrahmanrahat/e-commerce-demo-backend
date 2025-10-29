@@ -2,8 +2,17 @@ import { z } from 'zod';
 
 const createProductReviewValidationSchema = z.object({
   body: z.object({
-    username: z.string({ required_error: 'Username is required' }),
+    name: z.string({ required_error: 'User name is required' }),
     email: z.string().email({ message: 'Invalid email address' }).trim(),
+    images: z
+      .array(
+        z.string({
+          required_error: 'Each image URL must be a string',
+          invalid_type_error: 'Invalid image URL type',
+        }),
+      )
+      .min(1, 'At least one product image is required')
+      .max(3, 'Maximum 3 product images allow!'),
     product: z.string({ required_error: 'Product ID is required' }),
     rating: z
       .number({ required_error: 'Rating is required' })

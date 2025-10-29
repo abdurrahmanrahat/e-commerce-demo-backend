@@ -5,21 +5,21 @@ import { sendResponse } from '../../utils/sendResponse';
 import { ProductReviewServices } from './product-review.service';
 
 const createReview = catchAsync(async (req: Request, res: Response) => {
-  const result = await ProductReviewServices.createReview(
+  const result = await ProductReviewServices.createReviewIntoDB(
     req.params.productId,
     req.body,
   );
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
-    message: 'Review make successfully',
+    message: 'Review gives successfully',
     data: result,
   });
 });
 
 const getAllReviewsByProduct = catchAsync(
   async (req: Request, res: Response) => {
-    const result = await ProductReviewServices.getReviews(
+    const result = await ProductReviewServices.getReviewsByProductFromDB(
       req.params.productId,
       req.query,
     );
@@ -34,7 +34,7 @@ const getAllReviewsByProduct = catchAsync(
 );
 
 const getAllReviews = catchAsync(async (req: Request, res: Response) => {
-  const result = await ProductReviewServices.getAllReviews(req.query);
+  const result = await ProductReviewServices.getAllReviewsFromDB(req.query);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -45,24 +45,26 @@ const getAllReviews = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getSingleReview = catchAsync(async (req: Request, res: Response) => {
-  const result = await ProductReviewServices.getReviewById(
+  const result = await ProductReviewServices.getReviewByIdFromDB(
     req.params.productId,
     req.params.reviewId,
   );
+
   sendResponse(res, {
-    statusCode: result ? httpStatus.OK : httpStatus.NOT_FOUND,
-    success: !!result,
-    message: result ? 'Review found' : 'Review not found',
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Review retrieves successfully',
     data: result,
   });
 });
 
 const updateReview = catchAsync(async (req: Request, res: Response) => {
-  const result = await ProductReviewServices.updateReview(
+  const result = await ProductReviewServices.updateReviewIntoDB(
     req.params.productId,
     req.params.reviewId,
     req.body,
   );
+
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -72,7 +74,7 @@ const updateReview = catchAsync(async (req: Request, res: Response) => {
 });
 
 const deleteReview = catchAsync(async (req: Request, res: Response) => {
-  const result = await ProductReviewServices.deleteReview(
+  const result = await ProductReviewServices.deleteReviewFromDB(
     req.params.productId,
     req.params.reviewId,
   );
@@ -85,7 +87,7 @@ const deleteReview = catchAsync(async (req: Request, res: Response) => {
 });
 
 const approvedReview = catchAsync(async (req: Request, res: Response) => {
-  const result = await ProductReviewServices.approveReview(
+  const result = await ProductReviewServices.approveReviewIntoDB(
     req.params.productId,
     req.params.reviewId,
   );

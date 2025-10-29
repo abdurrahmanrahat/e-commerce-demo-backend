@@ -2,10 +2,14 @@ import httpStatus from 'http-status';
 import QueryBuilder from '../../builder/QueryBuilder';
 import AppError from '../../errors/AppError';
 import { Product } from '../product/product.model';
-import { IProductReview } from './product-review.interface';
+import { productReviewSearchableFields } from './product-review.contant';
+import { TProductReview } from './product-review.interface';
 import { ProductReview } from './product-review.model';
 
-const createReview = async (productId: string, payload: IProductReview) => {
+const createReviewIntoDB = async (
+  productId: string,
+  payload: TProductReview,
+) => {
   const product = await Product.findById(productId);
 
   if (!product) {
@@ -17,6 +21,7 @@ const createReview = async (productId: string, payload: IProductReview) => {
       ...payload,
       product: productId,
     });
+
     return review;
   } catch (error) {
     throw new AppError(
@@ -26,11 +31,12 @@ const createReview = async (productId: string, payload: IProductReview) => {
   }
 };
 
-const getReviews = async (
+const getReviewsByProductFromDB = async (
   productId: string,
   query: Record<string, unknown>,
 ) => {
   const product = await Product.findById(productId);
+
   if (!product) {
     throw new AppError(httpStatus.NOT_FOUND, 'Product is not found');
   }
@@ -39,10 +45,11 @@ const getReviews = async (
     ProductReview.find({
       isDeleted: false,
       product: productId,
+      isVerified: true,
     }),
     query,
   )
-    .search(['username', 'email']) // optional
+    .search(productReviewSearchableFields) // optional
     .filter()
     .paginate();
 
@@ -50,22 +57,26 @@ const getReviews = async (
 
   const totalCount = (
     await new QueryBuilder(
-      ProductReview.find({ isDeleted: false, product: productId }),
+      ProductReview.find({
+        isDeleted: false,
+        product: productId,
+        isVerified: true,
+      }),
       query,
     )
-      .search(['username', 'email'])
+      .search(productReviewSearchableFields)
       .filter().modelQuery
   ).length;
 
   return { data, totalCount };
 };
 
-const getAllReviews = async (query: Record<string, unknown>) => {
+const getAllReviewsFromDB = async (query: Record<string, unknown>) => {
   const reviewQuery = new QueryBuilder(
     ProductReview.find({ isDeleted: false }),
     query,
   )
-    .search(['username', 'email']) // optional
+    .search(productReviewSearchableFields)
     .filter()
     .paginate();
 
@@ -75,41 +86,59 @@ const getAllReviews = async (query: Record<string, unknown>) => {
 
   const totalCount = (
     await new QueryBuilder(ProductReview.find({ isDeleted: false }), query)
-      .search(['username', 'email'])
+      .search(productReviewSearchableFields)
       .filter().modelQuery
   ).length;
 
   return { data, totalCount };
 };
 
-const getReviewById = async (productId: string, reviewId: string) => {
+const getReviewByIdFromDB = async (productId: string, reviewId: string) => {
   const product = await Product.findById(productId);
+
   if (!product) {
     throw new AppError(httpStatus.NOT_FOUND, 'Product is not found');
   }
 
-  return await ProductReview.findOne({ _id: reviewId, isDeleted: false });
+  const result = await ProductReview.findOne({
+    _id: reviewId,
+    isDeleted: false,
+    isVerified: true,
+  });
+
+  if (!result) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      `Product review is not found with id: ${reviewId}`,
+    );
+  }
+
+  return result;
 };
 
-const updateReview = async (
+const updateReviewIntoDB = async (
   productId: string,
   reviewId: string,
-  payload: Partial<IProductReview>,
+  payload: Partial<TProductReview>,
 ) => {
   const product = await Product.findById(productId);
+
   if (!product) {
     throw new AppError(httpStatus.NOT_FOUND, 'Product is not found');
   }
 
-  return await ProductReview.findOneAndUpdate(
+  const result = await ProductReview.findOneAndUpdate(
     { _id: reviewId, isDeleted: false },
     payload,
     { new: true },
   );
+
+  return result;
 };
 
-const deleteReview = async (productId: string, reviewId: string) => {
+const deleteReviewFromDB = async (productId: string, reviewId: string) => {
   const product = await Product.findById(productId);
+
   if (!product) {
     throw new AppError(httpStatus.NOT_FOUND, 'Product not found');
   }
@@ -133,10 +162,11 @@ const deleteReview = async (productId: string, reviewId: string) => {
       );
     }
 
-    // Recalculate reviews count (only non-deleted)
+    // Recalculate reviews count (only non-deleted and approved)
     const reviewsCount = await ProductReview.countDocuments({
       product: product._id,
       isDeleted: { $ne: true },
+      isVerified: true,
     }).session(session);
 
     // Recalculate average rating (only non-deleted)
@@ -145,6 +175,7 @@ const deleteReview = async (productId: string, reviewId: string) => {
         $match: {
           product: product._id,
           isDeleted: { $ne: true },
+          isVerified: true,
         },
       },
       {
@@ -181,8 +212,9 @@ const deleteReview = async (productId: string, reviewId: string) => {
   }
 };
 
-const approveReview = async (productId: string, reviewId: string) => {
+const approveReviewIntoDB = async (productId: string, reviewId: string) => {
   const product = await Product.findById(productId);
+
   if (!product) {
     throw new AppError(httpStatus.NOT_FOUND, 'Product not found.');
   }
@@ -255,11 +287,11 @@ const approveReview = async (productId: string, reviewId: string) => {
 };
 
 export const ProductReviewServices = {
-  createReview,
-  getReviews,
-  getAllReviews,
-  getReviewById,
-  updateReview,
-  deleteReview,
-  approveReview,
+  createReviewIntoDB,
+  getReviewsByProductFromDB,
+  getAllReviewsFromDB,
+  getReviewByIdFromDB,
+  updateReviewIntoDB,
+  deleteReviewFromDB,
+  approveReviewIntoDB,
 };

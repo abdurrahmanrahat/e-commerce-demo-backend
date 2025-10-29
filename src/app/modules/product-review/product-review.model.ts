@@ -1,16 +1,21 @@
 import { model, Schema } from 'mongoose';
-import { IProductReview } from './product-review.interface';
+import { TProductReview } from './product-review.interface';
 
-const productReviewSchema: Schema<IProductReview> = new Schema<IProductReview>(
+const productReviewSchema: Schema<TProductReview> = new Schema<TProductReview>(
   {
-    username: {
+    name: {
       type: String,
-      required: [true, 'Username is required'],
+      required: [true, 'User name is required'],
     },
     email: {
       type: String,
       required: [true, 'Email is required'],
       trim: true,
+    },
+    images: {
+      type: [String],
+      required: [true, 'Product images are required'],
+      default: [],
     },
     product: {
       type: Schema.Types.ObjectId,
@@ -42,7 +47,7 @@ const productReviewSchema: Schema<IProductReview> = new Schema<IProductReview>(
   },
 );
 
-export const ProductReview = model<IProductReview>(
+export const ProductReview = model<TProductReview>(
   'ProductReview',
   productReviewSchema,
 );
