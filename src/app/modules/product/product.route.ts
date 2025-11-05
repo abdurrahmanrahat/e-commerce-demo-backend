@@ -36,35 +36,46 @@ router.delete(
 
 router.post(
   '/:productId/reviews/create-review',
+  auth(USER_ROLE.user, USER_ROLE.admin),
   validateRequest(ProductReviewValidations.createProductReviewValidationSchema),
   ProductReviewControllers.createReview,
 );
 
+// get reviews for products
 router.get(
   '/:productId/reviews',
   ProductReviewControllers.getAllReviewsByProduct,
 );
 
-router.get('/reviews/all-reviews', ProductReviewControllers.getAllReviews);
+// get all reviews
+router.get(
+  '/reviews/all-reviews',
+  auth(USER_ROLE.admin),
+  ProductReviewControllers.getAllReviews,
+);
 
 router.get(
   '/:productId/reviews/:reviewId',
   ProductReviewControllers.getSingleReview,
 );
 
-router.patch(
-  '/:productId/reviews/:reviewId',
-  validateRequest(ProductReviewValidations.updateProductReviewValidationSchema),
-  ProductReviewControllers.updateReview,
-);
+// router.patch(
+//   '/:productId/reviews/:reviewId',
+//   validateRequest(ProductReviewValidations.updateProductReviewValidationSchema),
+//   ProductReviewControllers.updateReview,
+// );
 
+// delete
 router.delete(
   '/:productId/reviews/:reviewId',
+  auth(USER_ROLE.admin),
   ProductReviewControllers.deleteReview,
 );
 
+// approved review
 router.post(
   '/:productId/reviews/:reviewId/approved',
+  auth(USER_ROLE.admin),
   ProductReviewControllers.approvedReview,
 );
 

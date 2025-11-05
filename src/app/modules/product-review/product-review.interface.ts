@@ -1,10 +1,9 @@
 import { Types } from 'mongoose';
 
 export type TProductReview = {
-  name: string;
-  email: string;
-  images: string[];
+  user: Types.ObjectId;
   product: Types.ObjectId;
+  images: string[];
   rating: number;
   review: string;
   isVerified?: boolean;

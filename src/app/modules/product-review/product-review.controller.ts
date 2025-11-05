@@ -9,6 +9,7 @@ const createReview = catchAsync(async (req: Request, res: Response) => {
     req.params.productId,
     req.body,
   );
+
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
@@ -58,20 +59,20 @@ const getSingleReview = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const updateReview = catchAsync(async (req: Request, res: Response) => {
-  const result = await ProductReviewServices.updateReviewIntoDB(
-    req.params.productId,
-    req.params.reviewId,
-    req.body,
-  );
+// const updateReview = catchAsync(async (req: Request, res: Response) => {
+//   const result = await ProductReviewServices.updateReviewIntoDB(
+//     req.params.productId,
+//     req.params.reviewId,
+//     req.body,
+//   );
 
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Review updated successfully',
-    data: result,
-  });
-});
+//   sendResponse(res, {
+//     statusCode: httpStatus.OK,
+//     success: true,
+//     message: 'Review updated successfully',
+//     data: result,
+//   });
+// });
 
 const deleteReview = catchAsync(async (req: Request, res: Response) => {
   const result = await ProductReviewServices.deleteReviewFromDB(
@@ -105,7 +106,6 @@ export const ProductReviewControllers = {
   getAllReviewsByProduct,
   getAllReviews,
   getSingleReview,
-  updateReview,
   deleteReview,
   approvedReview,
 };

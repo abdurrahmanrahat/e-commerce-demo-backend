@@ -3,24 +3,21 @@ import { TProductReview } from './product-review.interface';
 
 const productReviewSchema: Schema<TProductReview> = new Schema<TProductReview>(
   {
-    name: {
-      type: String,
-      required: [true, 'User name is required'],
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: [true, 'Review must be associated with a user'],
     },
-    email: {
-      type: String,
-      required: [true, 'Email is required'],
-      trim: true,
+
+    product: {
+      type: Schema.Types.ObjectId,
+      ref: 'Product',
+      required: [true, 'Review must be associated with a product'],
     },
     images: {
       type: [String],
       required: [true, 'Product images are required'],
       default: [],
-    },
-    product: {
-      type: Schema.Types.ObjectId,
-      ref: 'Product',
-      required: [true, 'Review must be associated with a product'],
     },
     rating: {
       type: Number,
