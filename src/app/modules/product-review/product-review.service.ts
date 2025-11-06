@@ -55,7 +55,7 @@ const getReviewsByProductFromDB = async (
     .sort(); // default (newest) or oldest
 
   const data = await reviewQuery.modelQuery
-    .populate('user')
+    // .populate('user')
     .sort({ createdAt: -1 });
 
   const totalCount = (
@@ -84,7 +84,9 @@ const getAllReviewsFromDB = async (query: Record<string, unknown>) => {
     .paginate()
     .sort(); // default (newest) or oldest
 
-  const data = await reviewQuery.modelQuery.sort({ createdAt: -1 });
+  const data = await reviewQuery.modelQuery
+    // .populate('user')
+    .sort({ createdAt: -1 });
   // use instant fetch call from frontend instead of populate
 
   const totalCount = (

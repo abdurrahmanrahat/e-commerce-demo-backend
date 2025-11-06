@@ -4,6 +4,7 @@ const createProductReviewValidationSchema = z.object({
   body: z.object({
     user: z.string({ required_error: 'User is required' }),
     product: z.string({ required_error: 'Product is required' }),
+    productSlug: z.string({ required_error: 'product slug is required' }),
     images: z
       .array(
         z.string({

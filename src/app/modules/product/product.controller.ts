@@ -32,9 +32,9 @@ const getSingleProduct = catchAsync(async (req: Request, res: Response) => {
   );
 
   sendResponse(res, {
-    statusCode: result ? httpStatus.OK : httpStatus.NOT_FOUND,
-    success: !!result,
-    message: result ? 'Product retrieved successfully' : 'Product not found',
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Product retrieved successfully',
     data: result,
   });
 });

@@ -15,8 +15,10 @@ router.post(
 
 router.get('/', auth(USER_ROLE.admin), UserControllers.getAllUsers);
 
+router.get('/:userId', UserControllers.getSingleUser);
+
 router.get(
-  '/get-me',
+  '/current/me',
   auth(USER_ROLE.user, USER_ROLE.admin),
   UserControllers.getMe,
 );

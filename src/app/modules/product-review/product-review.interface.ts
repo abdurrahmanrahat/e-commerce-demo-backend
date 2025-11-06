@@ -3,6 +3,7 @@ import { Types } from 'mongoose';
 export type TProductReview = {
   user: Types.ObjectId;
   product: Types.ObjectId;
+  productSlug: string;
   images?: string[];
   rating: number;
   review: string;

@@ -8,11 +8,14 @@ const productReviewSchema: Schema<TProductReview> = new Schema<TProductReview>(
       ref: 'User',
       required: [true, 'Review must be associated with a user'],
     },
-
     product: {
       type: Schema.Types.ObjectId,
       ref: 'Product',
       required: [true, 'Review must be associated with a product'],
+    },
+    productSlug: {
+      type: String,
+      required: [true, 'Product slug is required'],
     },
     images: {
       type: [String],

@@ -8,4 +8,6 @@ export const SORT_OPTION_MAP: Record<string, string | null> = {
   top_rated: '-averageRatings',
   ascending: 'name',
   descending: '-name',
+  highest_rating: '-rating',
+  lowest_rating: 'rating',
 };

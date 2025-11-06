@@ -24,6 +24,25 @@ const getAllUsersFromDB = async () => {
   return users;
 };
 
+const getSingleUserFromDB = async (userId: string) => {
+  if (!userId) {
+    throw new AppError(Number(httpStatus[400]), 'Missing user id');
+  }
+
+  const result = await User.findOne({ _id: userId, isDeleted: false }).select(
+    '-password',
+  );
+
+  if (!result) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      `User with the id '${userId}' is not found!`,
+    );
+  }
+
+  return result;
+};
+
 // get logged in user
 const getLoggedInUserFromDB = async (accessToken: string) => {
   try {
@@ -61,6 +80,7 @@ const updateUserIntoDB = async (
 export const UserServices = {
   createUserIntoDB,
   getAllUsersFromDB,
+  getSingleUserFromDB,
   getLoggedInUserFromDB,
   updateUserIntoDB,
 };

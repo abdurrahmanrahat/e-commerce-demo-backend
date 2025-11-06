@@ -29,6 +29,17 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getSingleUser = catchAsync(async (req: Request, res: Response) => {
+  const result = await UserServices.getSingleUserFromDB(req.params.userId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User retrieved successfully',
+    data: result,
+  });
+});
+
 const getMe = catchAsync(async (req: Request, res: Response) => {
   const accessToken = req.headers.authorization?.split(' ')[1];
 
@@ -62,6 +73,7 @@ const updateUser = catchAsync(async (req: Request, res: Response) => {
 export const UserControllers = {
   createUser,
   getAllUsers,
+  getSingleUser,
   getMe,
   updateUser,
 };
