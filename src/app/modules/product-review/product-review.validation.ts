@@ -11,8 +11,7 @@ const createProductReviewValidationSchema = z.object({
           invalid_type_error: 'Invalid image URL type',
         }),
       )
-      .min(1, 'At least one product image is required')
-      .max(3, 'Maximum 3 product images allow!'),
+      .optional(),
     rating: z
       .number({ required_error: 'Rating is required' })
       .min(1, 'Rating must be at least 1')

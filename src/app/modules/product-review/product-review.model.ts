@@ -16,7 +16,7 @@ const productReviewSchema: Schema<TProductReview> = new Schema<TProductReview>(
     },
     images: {
       type: [String],
-      required: [true, 'Product images are required'],
+      required: false,
       default: [],
     },
     rating: {
