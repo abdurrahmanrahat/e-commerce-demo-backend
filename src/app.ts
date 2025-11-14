@@ -10,7 +10,7 @@ app.use(express.json());
 
 const allowedOrigins = [
   'http://localhost:3000',
-  'https://e-commerce-demo-backend.vercel.app',
+  'https://gadgetoria.vercel.app',
 ]; // frontend URL
 
 app.use(
