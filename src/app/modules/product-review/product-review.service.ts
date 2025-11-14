@@ -1,4 +1,5 @@
 import httpStatus from 'http-status';
+import { Types } from 'mongoose';
 import QueryBuilder from '../../builder/QueryBuilder';
 import AppError from '../../errors/AppError';
 import { Product } from '../product/product.model';
@@ -72,6 +73,52 @@ const getReviewsByProductFromDB = async (
   ).length;
 
   return { data, totalCount };
+};
+
+const getReviewsStatsByProductFromDB = async (productId: string) => {
+  // Check product existence
+  const product = await Product.findById(productId);
+  if (!product) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Product is not found');
+  }
+
+  // Aggregate rating counts
+  const stats = await ProductReview.aggregate([
+    {
+      $match: {
+        product: new Types.ObjectId(productId),
+        isDeleted: false,
+        isVerified: true,
+      },
+    },
+    {
+      $group: {
+        _id: '$rating',
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  // Total reviews
+  const totalReviews = stats.reduce((acc, item) => acc + item.count, 0);
+
+  // Build final distribution array (5 → 1)
+  const distribution = [5, 4, 3, 2, 1].map((star) => {
+    const found = stats.find((s) => s._id === star);
+    const count = found ? found.count : 0;
+
+    const percentage = totalReviews
+      ? Math.round((count / totalReviews) * 100)
+      : 0;
+
+    return {
+      stars: star,
+      count,
+      percentage,
+    };
+  });
+
+  return distribution;
 };
 
 const getAllReviewsFromDB = async (query: Record<string, unknown>) => {
@@ -294,6 +341,7 @@ const approveReviewIntoDB = async (productId: string, reviewId: string) => {
 export const ProductReviewServices = {
   createReviewIntoDB,
   getReviewsByProductFromDB,
+  getReviewsStatsByProductFromDB,
   getAllReviewsFromDB,
   getReviewByIdFromDB,
   deleteReviewFromDB,

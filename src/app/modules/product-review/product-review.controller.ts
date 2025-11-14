@@ -33,6 +33,21 @@ const getAllReviewsByProduct = catchAsync(
     });
   },
 );
+const getAllReviewsStatsByProduct = catchAsync(
+  async (req: Request, res: Response) => {
+    const distribution =
+      await ProductReviewServices.getReviewsStatsByProductFromDB(
+        req.params.productId,
+      );
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Reviews stats retrieve successfully',
+      data: distribution,
+    });
+  },
+);
 
 const getAllReviews = catchAsync(async (req: Request, res: Response) => {
   const result = await ProductReviewServices.getAllReviewsFromDB(req.query);
@@ -104,6 +119,7 @@ const approvedReview = catchAsync(async (req: Request, res: Response) => {
 export const ProductReviewControllers = {
   createReview,
   getAllReviewsByProduct,
+  getAllReviewsStatsByProduct,
   getAllReviews,
   getSingleReview,
   deleteReview,

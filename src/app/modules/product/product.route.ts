@@ -47,6 +47,12 @@ router.get(
   ProductReviewControllers.getAllReviewsByProduct,
 );
 
+// get reviews distribution stats
+router.get(
+  '/:productId/reviews/stats',
+  ProductReviewControllers.getAllReviewsStatsByProduct,
+);
+
 // get all reviews
 router.get(
   '/reviews/all-reviews',
